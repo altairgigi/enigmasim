@@ -7,13 +7,13 @@
 //declaration of the enigma class
 class Enigma{
 public:
-    Enigma(char plugWiring[], RotorConfig left, RotorConfig centre, RotorConfig right, char reflectorCfg[]);
+    Enigma(char plugWiring[], RotorConfig left, RotorConfig middle, RotorConfig right, char reflectorCfg[]);
     ~Enigma();
     void Encrypt(char &key);
     void StepRotors();
 private:
     Rotor rotorLeft;
-    Rotor rotorCentre;
+    Rotor rotorMiddle;
     Rotor rotorRight;
     Reflector reflex;
     Plugboard board;

@@ -6,18 +6,17 @@
 #include "rotor.hpp"
 #include "reflector.hpp"
 #include "config.hpp"
-#include "files.hpp"
 
 int main () {
     char key; //user input
     char &k = key; //alias for user input
     char plugboardConfig[26] = PLUGBOARD_NOPLUGS, reflectorConfig[26] = REFLECTOR_B; //configurations for reflector and plugboard are arrays
-    RotorConfig rotorLeftConfig = ROTOR_1, rotorCentreConfig = ROTOR_2, rotorRightConfig = ROTOR_3; //configuration for rotors is a struct
+    RotorConfig rotorLeftConfig = ROTOR_1, rotorMiddleConfig = ROTOR_2, rotorRightConfig = ROTOR_3; //configuration for rotors is a struct
     bool endEncrypt = false; //flag for the cycle
     std::vector<char> text, textEncrypted; //vectors where texts will be stored
 
     PrintInstructions(); //instructions for use
-    Enigma machine{plugboardConfig, rotorLeftConfig, rotorCentreConfig, rotorRightConfig, reflectorConfig};
+    Enigma machine{plugboardConfig, rotorLeftConfig, rotorMiddleConfig, rotorRightConfig, reflectorConfig};
     PrintInterface(); //prints interface
     
     while(!endEncrypt){

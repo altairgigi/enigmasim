@@ -5,8 +5,8 @@
 #include "reflector.hpp"
 #include "config.hpp"
 //enigma constructor with logging
-Enigma::Enigma(char pw[], RotorConfig rlc, RotorConfig rcc, RotorConfig rrc, char rc[])
-: board(pw), rotorLeft(rlc), rotorCentre(rcc), rotorRight(rrc), reflex(rc)
+Enigma::Enigma(char pw[], RotorConfig rlc, RotorConfig rmc, RotorConfig rrc, char rc[])
+: board(pw), rotorLeft(rlc), rotorMiddle(rmc), rotorRight(rrc), reflex(rc)
 {
     std::cout << "Enigma machine activated.\n";
 }
@@ -23,7 +23,7 @@ void Enigma::Encrypt(char &key) {
     std::cout << i << "plug\n";
     rotorRight.ShiftForward(i);
     std::cout << i << "rotr\n";
-    rotorCentre.ShiftForward(i);
+    rotorMiddle.ShiftForward(i);
     std::cout << i << "rotc\n";
     rotorLeft.ShiftForward(i);
     std::cout << i << "rotl\n";
@@ -31,7 +31,7 @@ void Enigma::Encrypt(char &key) {
     std::cout << i << "refl\n";
     rotorLeft.ShiftBackward(i);
     std::cout << i << "rotl\n";
-    rotorCentre.ShiftBackward(i);
+    rotorMiddle.ShiftBackward(i);
     std::cout << i << "rotc\n";
     rotorRight.ShiftBackward(i);
     std::cout << i << "rotr\n";
@@ -44,16 +44,16 @@ void Enigma::StepRotors() {
     rotorRight.Rotate();
     if(rotorRight.IsOnNotch()) {
         std::cout << "Rotating centre rotor...\n";
-        rotorCentre.Rotate();
-        if(rotorCentre.IsOnNotch())
+        rotorMiddle.Rotate();
+        if(rotorMiddle.IsOnNotch())
         {
             std::cout << "Rotating left rotor...\n";
             rotorLeft.Rotate();
         }
     }
-    else if(rotorCentre.IsOnNotch()) {
+    else if(rotorMiddle.IsOnNotch()) {
         std::cout << "Rotating centre and left rotor...\n";
-        rotorCentre.Rotate(); //this simulates the 'double step' anomaly
+        rotorMiddle.Rotate(); //this simulates the 'double step' anomaly
         rotorLeft.Rotate();
     }
 }
