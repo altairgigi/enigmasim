@@ -1,10 +1,10 @@
 #ifndef INTERFACE_HPP
 #define INTERFACE_HPP
 //prototypes for the functions
-void PrintInstructions();
+char PrintInstructions();
 void PrintInterface();
 char GetKey();
-void PrintKey(char key);
+void LightKey(char key);
 void PrintText(std::vector<char> textCrypted);
 
 #endif
