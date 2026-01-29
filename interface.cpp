@@ -4,7 +4,7 @@
 #include "interface.hpp"
 //function to print instructions on how the simulator will work
 char PrintInstructions() {
-    int m;
+    char m;
     std::cout << "Welcome to EnigmaSim! This is a simple yet historically accurate Enigma machine simulator.\n"
               << "\nOperators who were tasked with managing the machine had to follow a strict sequence of operations:\n"
               << "1) Consult  the cipher for that day;\n"
@@ -13,8 +13,8 @@ char PrintInstructions() {
               << "4) Insert them into the machine in the indicated order (Walzenlage);\n"
               << "5) Adjust the initial position of the rotor rings to the triplet of letters indicated (Grundstellung);\n"
               << "6) Configure the letter exchange pins as determined by the Enigma key for that day (Steckerverbindungen).\n"
-              << "\nYou will simply input letters and get the crypted result. Select the model you want to use: '1' for M3 (Standard) and '2' for M4 (Uboat)\n";
-    m = _getch();
+              << "\nLuckily, you will just input letters and get the encrypted result.\nSelect the model you want to use: '1' for M3 (Standard) and '2' for M4 (Uboat)\n";
+    std::cin >> m;
     return m;
 }
 //function to print the interface

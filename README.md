@@ -8,7 +8,7 @@ Download the 'enigmasim' file on your Linux system or the 'enigmasim.exe' file o
 
 ## Purpose
 EnigmaSim is a project which aimed at creating a working and historically accurate Enigma machine simulator while mastering a number C++ features and techniques.
-As consequence it required to 1) understand how the Enigma worked and crypted data and 2) how to translate its function to C++ while ensuring code readability and historical accuracy.
+As consequence it required to 1) understand how the Enigma worked and encrypted data and 2) how to translate its function to C++ while ensuring code readability and historical accuracy.
 In order to do so, EnigmaSim employs all the basic features of C++ (control flow, arrays, vectors, classes, structs, files, pointers, etc) and the four pillars of OOP.
 
 ## Features

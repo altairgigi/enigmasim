@@ -12,4 +12,5 @@ add_executable(enigma
     plugboard.cpp 
     rotor.cpp
     reflector.cpp
+    handler.cpp
 )
