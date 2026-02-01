@@ -1,10 +1,17 @@
 #include <iostream>
-#include <conio.h> //will work only on windows
 #include <vector>
 #include "interface.hpp"
+void PrintUsage() {
+    std::cerr << "Usage: enigma.exe [<command>]\n"
+              << "List of available commands:\n"
+              << "-info\tShow instructions before running\n"
+              << "-skip [<option>]\tSkip setup and load default settings\n"
+              << "List of available options:\n"
+              << "-m3\tUse the standard(M3) model\n"
+              << "-m4\tuse the uboat(M4) model\n";
+}
 //function to print instructions on how the simulator will work
-char PrintInstructions() {
-    char m;
+void PrintInstructions() {
     std::cout << "Welcome to EnigmaSim! This is a simple yet historically accurate Enigma machine simulator.\n"
               << "\nOperators who were tasked with managing the machine had to follow a strict sequence of operations:\n"
               << "1) Consult  the cipher for that day;\n"
@@ -13,9 +20,8 @@ char PrintInstructions() {
               << "4) Insert them into the machine in the indicated order (Walzenlage);\n"
               << "5) Adjust the initial position of the rotor rings to the triplet of letters indicated (Grundstellung);\n"
               << "6) Configure the letter exchange pins as determined by the Enigma key for that day (Steckerverbindungen).\n"
-              << "\nLuckily, you will just input letters and get the encrypted result.\nSelect the model you want to use: '1' for M3 (Standard) and '2' for M4 (Uboat)\n";
-    std::cin >> m;
-    return m;
+              << "Luckily, through a guided procedure, you will be asked to input the settings. Follow the instructions\n"
+              << "You will then just input letters and get the encrypted result.\n";
 }
 //function to print the interface
 void PrintInterface() {
@@ -25,11 +31,20 @@ void PrintInterface() {
               << " (A)(S)(D)(F)(G)(H)(J)(K)  \n"
               << "(P)(Y)(X)(C)(V)(B)(N)(M)(L)\n";
 }
+//function to get settings
+char GetModel() {
+    char m;
+    do{
+    std::cout << "Select the model you want to use: '1' for M3 (Standard) and '2' for M4 (Uboat)\n";
+    std::cin >> m;
+    }while(m != '1' && m != '2');
+    return m;
+}
 //function to get the input key
 char GetKey() {
     char key;
     std::cout << "Press any key:\n";
-    key = _getch();
+    get_input; //key = _getch() on windows, uses a specific function on linux
     if(islower(key)) { //check if letter is lowercase
         key = toupper(key); //converts to uppercase
     }

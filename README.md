@@ -18,8 +18,8 @@ EnigmaSim is intended to be fully fledged simulator and as such it has:
 * full set of rotors (I-VIII + beta and gamma) and reflectors (A, B, and C and 'thin' variants) just like the ones used between 1930 and 1945;
 * clean and simple CLI with working lamps and rotors in ASCII art; **WIP**
 * simulation of 'double step' anomaly, ringastellung, grundstellung, etc;
-* user defined settings (machine model, rotors, reflectors and plugboard) via arguments; **WIP**
-* file saving system (as .txt). **WIP**
+* user-defined settings (machine model, rotors, reflectors and plugboard) via guided setup;
+* file saving system (as .txt).
 
 ## License
 

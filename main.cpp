@@ -1,6 +1,7 @@
 #include <iostream>
-#include <memory>
-#include <vector>
+#include <memory> //for the smart pointer
+#include <string> //for the arguments
+#include <vector> //for the texts
 #include "enigma.hpp"
 #include "interface.hpp"
 #include "plugboard.hpp"
@@ -9,28 +10,51 @@
 #include "config.hpp"
 #include "handler.hpp"
 
-int main () {
-    char key, choice; //user input and choices
-    char &k = key; //alias for user input
-    char plugboardConfig[26] = PLUGBOARD_NOPLUGS; //configuration for reflector and plugboard are arrays
-    RotorConfig rotorLeftConfig = ROTOR_3, rotorMiddleConfig = ROTOR_2, rotorRightConfig = ROTOR_1, rotorExtraConfig = ROTOR_B; //configurations for rotors is a struct
-    bool endEncrypt = false; //flag for the cycle
-    std::vector<char> text, textEncrypted; //vectors where texts will be stored
+int main (int argc, char *argv[]) {
     std::unique_ptr<Enigma> machine; //declare a smart pointer to avoid scope issue when initalising the machine
-
-    choice = PrintInstructions(); //instructions for use and model selection
-    if(choice == '1') { //loads standard configuration
-        char reflectorConfig[26] = REFLECTOR_B; 
-        machine = std::make_unique<Enigma>(plugboardConfig, rotorLeftConfig, rotorMiddleConfig, rotorRightConfig, reflectorConfig);
+    //checks for the arguments 
+    if(argc == 1){
+        std::cout << "Welcome to EnigmaSim!\n";
     }
-    else if(choice == '2') { //loads uboat configuration
-        char reflectorConfig[26] = REFLECTOR_B_DUNN; 
-        machine = std::make_unique<EnigmaM4>(rotorExtraConfig, plugboardConfig, rotorLeftConfig, rotorMiddleConfig, rotorRightConfig, reflectorConfig);
+    else if(argc == 2 && std::string(argv[1]) == "-info") {
+        PrintInstructions();
     }
-    else { //prints error and exits
-        std::cout << "Error: Invalid choice! Exiting program!\n";
+    else if(argc == 3 && std::string(argv[1]) == "-skip") {
+        if(std::string(argv[2]) == "-m3"){
+            MachineConfig enigmaConfig = LoadDefaultSettings("M3");
+            machine = std::make_unique<Enigma>(enigmaConfig);
+        }
+        else if(std::string(argv[2]) == "-m4"){
+            MachineConfig enigmaConfig = LoadDefaultSettings("M4");
+            machine = std::make_unique<EnigmaM4>(enigmaConfig);
+        }
+        else{
+            PrintUsage(); //if the argument was correct but the option was not
+            return 2;
+        }
+    }
+    else{ //if arguments were entered incorrectly
+        PrintUsage();
         return 1;
     }
+    
+    char key, choice, model; //user input and choices
+    char &k = key; //alias for user input
+    bool endEncrypt = false; //flag for the cycle
+    std::vector<char> text, textEncrypted; //vectors where texts will be stored
+
+    if(argc == 1 || std::string(argv[1]) == "-info") {
+        model = GetModel(); //model selection and setup
+        if(model == '1') { //loads standard configuration
+            MachineConfig enigmaConfig = LoadCustomSettings();
+            machine = std::make_unique<Enigma>(enigmaConfig);
+        }
+        else{ //loads uboat configuration
+            MachineConfig enigmaConfig = LoadCustomSettings("M4");
+            machine = std::make_unique<EnigmaM4>(enigmaConfig);
+        }
+    }
+
     PrintInterface(); //prints interface
     //cycle for the encryption will prompt for a key, encrypt it and show the result
     while(!endEncrypt){

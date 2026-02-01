@@ -1,9 +1,8 @@
 #include <algorithm>
 #include "plugboard.hpp"
-#include "config.hpp"
 //plugboard constructor
-Plugboard::Plugboard(char pw[]) {
-    std::copy(pw, pw + 26, plugs);
+Plugboard::Plugboard(PlugboardConfig pcfg) {
+    std::copy(std::begin(pcfg.plugs), std::end(pcfg.plugs), std::begin(Plugboard::plugs));
 }
 //function to swap the key
 void Plugboard::Swap(char &key, int &index) {

@@ -5,9 +5,9 @@
 #include "reflector.hpp"
 #include "config.hpp"
 //class enigma constructor
-Enigma::Enigma(char pw[], RotorConfig rlc, RotorConfig rmc, RotorConfig rrc, char rc[])
-: board(pw), rotorLeft(rlc), rotorMiddle(rmc), rotorRight(rrc), reflex(rc)
-{}
+Enigma::Enigma(MachineConfig eni)
+: board(eni.plugboardConfig), rotorLeft(eni.rotorLeftConfig), rotorMiddle(eni.rotorMiddleConfig), rotorRight(eni.rotorRightConfig), reflex(eni.reflectorConfig) {
+}
 //class enigma constructor with logging
 Enigma::~Enigma() {
     std::cout << "Enigma machine deactivated. Take note and rest.\n";
@@ -43,10 +43,10 @@ void Enigma::StepRotors() {
     }
 }
 //derived class enigma M4 constructor
-EnigmaM4::EnigmaM4(RotorConfig re, char pw[], RotorConfig rlc, RotorConfig rmc, RotorConfig rrc, char rc[])
-: Enigma{pw, rlc, rmc, rrc, rc}, rotorExtra(re)
-{}
-//derived class enigma M4 constructor
+EnigmaM4::EnigmaM4(MachineConfig eni)
+: Enigma(eni), rotorExtra(eni.rotorExtraConfig) {
+}
+//derived class enigma M4 destructor
 EnigmaM4::~EnigmaM4() {}
 //derived class function to encrypt 
 void EnigmaM4::Encrypt(char &key) {

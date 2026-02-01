@@ -1,4 +1,9 @@
 #pragma once //prefer this since struct can be defined only once in a single compilation
+//struct for components configuration to handle array decay; std::array not used for the sake of simplicity
+//struct for plugboard configuration
+struct PlugboardConfig {
+    char plugs[26];
+};
 //struct to save rotor configuration
 struct RotorConfig {
     char ring[26];
@@ -7,11 +12,21 @@ struct RotorConfig {
     char notchB; //only configurations VI, VII, VIII will use this
     int offset;
 };
-//to be used as reference for rotor ring and plugboard when there is not a plug wiring
+//struct for reflector configuration
+struct ReflectorConfig {
+    char map[26];
+};
+//struct to save enigma machine config
+struct MachineConfig {
+    PlugboardConfig plugboardConfig;
+    ReflectorConfig reflectorConfig;
+    RotorConfig rotorLeftConfig, rotorMiddleConfig, rotorRightConfig, rotorExtraConfig;
+};
+//to be used as reference for rotor ring, plugboard when there are no plugs and reflector when there is none
 #define ALPHABET {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'}
 //may use a default configuration
-#define PLUGBOARD_DEFAULT {'Z', 'B', 'X', 'D', 'V', 'F', 'H', 'G', 'I', 'K', 'J', 'L', 'N', 'M', 'O', 'Q', 'P', 'R', 'T', 'S', 'U', 'E', 'W', 'C', 'Y', 'A'} //az, cx, ev, hg, jk, mn, pq, st
 #define PLUGBOARD_NOPLUGS ALPHABET
+#define PLUGBOARD_DEFAULT {'Z', 'B', 'X', 'D', 'V', 'F', 'H', 'G', 'I', 'K', 'J', 'L', 'N', 'M', 'O', 'Q', 'P', 'R', 'T', 'S', 'U', 'E', 'W', 'C', 'Y', 'A'} //az, cx, ev, hg, jk, mn, pq, st
 //configurations for rotors, the notch will be set in letter after for the check (es. configuration I historically had notch on 'q' but the check will be on the 'r')
 #define ROTOR_1 {ALPHABET, {'E', 'K', 'M', 'F', 'L', 'G', 'D', 'Q', 'V', 'Z', 'N', 'T', 'O', 'W', 'Y', 'H', 'X', 'U', 'S', 'P', 'A', 'I', 'B', 'R', 'C', 'J'}, 'R', '\0', 0}
 #define ROTOR_2 {ALPHABET, {'A', 'J', 'D', 'K', 'S', 'I', 'R', 'U', 'X', 'B', 'L', 'H', 'W', 'T', 'M', 'C', 'Q', 'G', 'Z', 'N', 'P', 'Y', 'F', 'V', 'O', 'E'}, 'F', '\0', 0}
@@ -24,6 +39,7 @@ struct RotorConfig {
 #define ROTOR_B {ALPHABET, {'L', 'E', 'Y', 'J', 'V', 'C', 'N', 'I', 'X', 'W', 'P', 'B', 'Q', 'M', 'D', 'R', 'T', 'A', 'K', 'Z', 'G', 'F', 'U', 'H', 'O', 'S'}, '\0', '\0', 0} //M4 only
 #define ROTOR_G {ALPHABET, {'F', 'S', 'O', 'K', 'A', 'N', 'U', 'E', 'R', 'H', 'M', 'B', 'T', 'I', 'Y', 'C', 'W', 'L', 'Q', 'P', 'Z', 'X', 'V', 'G', 'J', 'D'}, '\0', '\0', 0} //M4 only
 //configurations for the reflector
+#define REFLECTOR_NONE ALPHABET
 #define REFLECTOR_A {'E', 'J', 'M', 'Z', 'A', 'L', 'Y', 'X', 'V', 'B', 'W', 'F', 'C', 'R', 'Q', 'U', 'O', 'N', 'T', 'S', 'P', 'I', 'K', 'H', 'G', 'D'}
 #define REFLECTOR_B {'Y', 'R', 'U', 'H', 'Q', 'S', 'L', 'D', 'P', 'X', 'N', 'G', 'O', 'K', 'M', 'I', 'E', 'B', 'F', 'Z', 'C', 'W', 'V', 'J', 'A', 'T'}
 #define REFLECTOR_C {'F', 'V', 'P', 'J', 'I', 'A', 'O', 'Y', 'E', 'D', 'R', 'Z', 'X', 'W', 'G', 'C', 'T', 'K', 'U', 'Q', 'S', 'B', 'N', 'M', 'H', 'L'}
