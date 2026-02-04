@@ -20,8 +20,8 @@ void PrintInstructions() {
               << "4) Insert them into the machine in the indicated order (Walzenlage);\n"
               << "5) Adjust the initial position of the rotor rings to the triplet of letters indicated (Grundstellung);\n"
               << "6) Configure the letter exchange pins as determined by the Enigma key for that day (Steckerverbindungen).\n"
-              << "Luckily, through a guided procedure, you will be asked to input the settings. Follow the instructions\n"
-              << "You will then just input letters and get the encrypted result.\n";
+              << "Luckily, through a guided procedure, you will be asked to input the settings. Just follow the instructions.\n"
+              << "You will then be able to input letters and get the encrypted result.\n";
 }
 //function to print the interface
 void PrintInterface() {

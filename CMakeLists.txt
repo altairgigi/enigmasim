@@ -13,4 +13,5 @@ add_executable(enigmasim
     rotor.cpp
     reflector.cpp
     handler.cpp
+    tools.cpp
 )

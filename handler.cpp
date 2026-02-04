@@ -1,83 +1,85 @@
 #include <iostream>
 #include <fstream>
-#include <limits>
-#include <chrono>
-#include <format>
 #include "handler.hpp"
-#include "config.hpp"
+#include "tools.hpp"
 //function to load default settings
 MachineConfig LoadDefaultSettings(std::string m) {
     if(m == "M3") {
         std::cout << "Loading standard model default settings.\n";
-        return {PLUGBOARD_NOPLUGS, REFLECTOR_B, ROTOR_3, ROTOR_2, ROTOR_1};
+        return {PLUGBOARD_NOPLUGS, REFLECTOR_B, {ALPHABET, ROTOR_3, 0, 0}, {ALPHABET, ROTOR_2, 0, 0}, {ALPHABET, ROTOR_1, 0, 0}};
     }
     else {
         std::cout << "Loading default "<< m <<" settings.\n";
-        return {PLUGBOARD_NOPLUGS, REFLECTOR_B_DUNN, ROTOR_3, ROTOR_2, ROTOR_1, ROTOR_B};
+        return {PLUGBOARD_NOPLUGS, REFLECTOR_B_DUNN, {ALPHABET, ROTOR_3, 0, 0}, {ALPHABET, ROTOR_2, 0, 0}, {ALPHABET, ROTOR_1, 0, 0}, {ALPHABET, ROTOR_B, 0, 0}};
     }
 }
 //gets rotor settings through function to initialise struct
 RotorConfig GetRotorSetting(std::string n) {
-    int select;
+    int select, ring, offset;
     if(n == "extra") {
-        std::cout << "Select fourth rotor: \n"
-                  << "(Pick either 9 or 0, then ring setting and starting positiones. Es. '923' to use configuration beta, with ring setting 2 and starting position 3.)\n";
+        std::cout << "Select fourth rotor setting: \n"
+                  << "Pick rotor configuration (9 or 0), then ring setting (0-25) and starting position (0-25).\n"
+                  << "Es. '923' to use configuration beta, with ring setting 'c' and starting position 'd'.\n";
     }
     else {
-        std::cout << "Select "<< n << " rotor: \n"
-                  << "(Pick 1-8, then ring setting and starting position. Es. '123' to use configuration I, with ring setting 2 and starting position 3.)\n";
+        std::cout << "Select "<< n << " rotor setting: \n"
+                  << "Pick rotor configuration (1-8), then ring setting (0-25) and starting position (0-25).\n" 
+                  << "Es. '123' to use configuration I, with ring setting on 'c' and starting position on 'd'.)\n";
     }
-    std::cin >> select;
-    //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //cleans buffer
+    std::cin >> select >> ring >> offset;
+    std::cin.ignore(1000, '\n'); //cleans buffer
+    //if values are above range reset them
+    ring = ring % 26;
+    offset = offset %26;
     //if to handle variant configuration assignment
     if(n == "extra") {
         if(select == 9) {
-            return ROTOR_B;
+            return {ALPHABET, ROTOR_B, offset, ring};
         }
         else if(select == 0) {
-            return ROTOR_G;
+            return {ALPHABET, ROTOR_B, offset, ring};
         }
         else {
             std::cout << "Error: This configuration doesn't exists! Loading default rotor settings...\n";
-            return ROTOR_B;
+            return {ALPHABET, ROTOR_B, 0, 0};
         }
     }
     //switch to handle standard configuration assignment
     switch(select) {
         case 1: 
-            return ROTOR_1;
+            return {ALPHABET, ROTOR_1, offset, ring};
             break;
         case 2:
-            return ROTOR_2;
+            return {ALPHABET, ROTOR_2, offset, ring};
             break;
         case 3:
-            return ROTOR_3;
+            return {ALPHABET, ROTOR_3, offset, ring};
             break;
         case 4:
-            return ROTOR_4;
+            return {ALPHABET, ROTOR_4, offset, ring};
             break;
         case 5:
-            return ROTOR_5;
+            return {ALPHABET, ROTOR_5, offset, ring};
             break;
         case 6:
-            return ROTOR_6;
+            return {ALPHABET, ROTOR_6, offset, ring};
             break;
         case 7:
-            return ROTOR_7;
+            return {ALPHABET, ROTOR_7, offset, ring};
             break;
         case 8:
-            return ROTOR_8;
+            return {ALPHABET, ROTOR_8, offset, ring};
             break;
         default: //handles mistakes in configuration
             std::cout << "Error: This configuration doesn't exists! Loading default rotor settings...\n";
             if(n == "left") {
-                return ROTOR_3; //{ALPHABET, ROTOR_3, select[2]};
+                return {ALPHABET, ROTOR_1, 0, 0};
             }
             else if(n == "middle") {
-                return ROTOR_2; //{ALPHABET, ROTOR_2, select[2]};
+                return {ALPHABET, ROTOR_2, 0, 0};
             }
             else{
-                return ROTOR_1; //{ALPHABET, ROTOR_1, select[2]};
+                return {ALPHABET, ROTOR_1, 0, 0};
             }
             break;
     }
@@ -88,7 +90,7 @@ ReflectorConfig GetReflectorSetting() {
 
     std::cout << "Select reflector: (i.e. 'A', 'B', or 'C')\n";
     std::cin >> input;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //cleans buffer
+    std::cin.ignore(1000, '\n'); //cleans buffer
 
     if(std::tolower(input) == 'a') {
         return REFLECTOR_A;
@@ -110,7 +112,7 @@ ReflectorConfig GetReflectorSetting(std::string m) {
 
     std::cout << "Select reflector: (i.e. 'B' or 'C')\n";
     std::cin >> input;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //cleans buffer
+    std::cin.ignore(1000, '\n'); //cleans buffer
 
     if(std::tolower(input) == 'b') {
         return REFLECTOR_B_DUNN;
@@ -132,22 +134,23 @@ PlugboardConfig GetPlugboardSettings() {
         if(plugs.length() > 1 && plugs.length() %2 != 0) { //this won't run during first cycle
             std::cout << "Attention! You entered an odd number of plugs!\n";
         }
-        std::cout << "Select plugs: (Enter max 5 pairs of letters: es. 'az' to switch 'a' with 'z'. Press just Enter to skip.)\n";
+        std::cout << "Select plugs: \n"
+                  << "Enter max 10 pairs of letters: es. 'azbuenlptv' to switch 'a' with 'z', 'b' with 'u', and so on. Press just Enter to skip.\n";
         std::getline(std::cin, plugs);
         if(plugs.empty()) { //if the user just presses enter the plugboard configuration is skipped
             return plugCon;
         }
     }while(plugs.length() > 1 && plugs.length() %2 != 0); //checks if number of character is even
 
-    for(int i = 0;  i < plugs.length() && i < 10; i++) { //manipulated data through indexes
+    for(int i = 0;  i < plugs.length() && i < 20; i++) { //manipulates data through indexes
         int c;
-        if(i % 2 != 0) {
+        if(i % 2 == 0) {
             c = std::toupper(plugs[i]) - 'A';
-            plugCon.plugs[c] = plugs[i + 1];
+            plugCon.plugs[c] = std::toupper(plugs[i + 1]);
         }
         else {
             c = std::toupper(plugs[i]) - 'A';
-            plugCon.plugs[c] = plugs[i - 1];
+            plugCon.plugs[c] = std::toupper(plugs[i - 1]);
         }
     }
 
@@ -182,11 +185,6 @@ MachineConfig LoadCustomSettings(std::string m) {
     MachineConfig enigmaConfig = {plugCon, RefCon, rotLeftCon, rotMidCon, rotRightCon, rotExtraCon};
 
     return enigmaConfig;
-}
-//function to get date and time and format them
-std::string GetDateAndTime() {
-    auto time = std::chrono::system_clock::now(); //let the compile handle type definition for the result of now();
-    return std::format("{:%d-%m-%Y-%H:%M}", time); //converts the mow() result in human readable format
 }
 //function to save text as file with append
 void SaveFile(std::vector<char> txt) {

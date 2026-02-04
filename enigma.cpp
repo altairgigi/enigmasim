@@ -4,6 +4,7 @@
 #include "rotor.hpp"
 #include "reflector.hpp"
 #include "config.hpp"
+#include "tools.hpp"
 //class enigma constructor
 Enigma::Enigma(MachineConfig eni)
 : board(eni.plugboardConfig), rotorLeft(eni.rotorLeftConfig), rotorMiddle(eni.rotorMiddleConfig), rotorRight(eni.rotorRightConfig), reflex(eni.reflectorConfig) {
@@ -14,17 +15,25 @@ Enigma::~Enigma() {
 }
 //function to encrypt 
 void Enigma::Encrypt(char &key) {
-    int index = key - 'A'; //set to be the array position of variable 'k' to handle the mapping
+    int index = Ctoi(key); //set to be the array position of variable 'k' to handle the mapping
     int &i = index;
     StepRotors(); //first steps the rotors then proceed with the sequence
     board.Swap(key, i);
+    std::cout << i <<"\n";
     rotorRight.ShiftForward(i);
+    std::cout << i <<"\n";
     rotorMiddle.ShiftForward(i);
+    std::cout << i <<"\n";
     rotorLeft.ShiftForward(i);
+    std::cout << i <<"\n";
     reflex.Reflect(i);
+    std::cout << i <<"\n";
     rotorLeft.ShiftBackward(i);
+    std::cout << i <<"\n";
     rotorMiddle.ShiftBackward(i);
+    std::cout << i <<"\n";
     rotorRight.ShiftBackward(i);
+    std::cout << i <<"\n";
     board.Swap(key, i);
 }
 //function to orchestrate rotors rotation
@@ -50,7 +59,7 @@ EnigmaM4::EnigmaM4(MachineConfig eni)
 EnigmaM4::~EnigmaM4() {}
 //derived class function to encrypt 
 void EnigmaM4::Encrypt(char &key) {
-    int index = key - 'A';
+    int index = Ctoi(key);
     int &i = index;
     StepRotors();
     board.Swap(key, i); //sequence is the same except for the fourth rotor right before and right after the reflector
