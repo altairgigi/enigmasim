@@ -19,21 +19,13 @@ void Enigma::Encrypt(char &key) {
     int &i = index;
     StepRotors(); //first steps the rotors then proceed with the sequence
     board.Swap(key, i);
-    std::cout << i <<"\n";
     rotorRight.ShiftForward(i);
-    std::cout << i <<"\n";
     rotorMiddle.ShiftForward(i);
-    std::cout << i <<"\n";
     rotorLeft.ShiftForward(i);
-    std::cout << i <<"\n";
     reflex.Reflect(i);
-    std::cout << i <<"\n";
     rotorLeft.ShiftBackward(i);
-    std::cout << i <<"\n";
     rotorMiddle.ShiftBackward(i);
-    std::cout << i <<"\n";
     rotorRight.ShiftBackward(i);
-    std::cout << i <<"\n";
     board.Swap(key, i);
 }
 //function to orchestrate rotors rotation
@@ -50,6 +42,10 @@ void Enigma::StepRotors() {
         rotorMiddle.Rotate(); //this simulates the 'double step' anomaly
         rotorLeft.Rotate();
     }
+}
+//function to get all the rotors positions
+std::vector<char> Enigma::GetRotorsPos() const {
+    return {rotorLeft.GetPos(), rotorMiddle.GetPos(), rotorRight.GetPos()};
 }
 //derived class enigma M4 constructor
 EnigmaM4::EnigmaM4(MachineConfig eni)
@@ -73,4 +69,8 @@ void EnigmaM4::Encrypt(char &key) {
     rotorMiddle.ShiftBackward(i);
     rotorRight.ShiftBackward(i);
     board.Swap(key, i);
+}
+//function to get all the M4 rotors positions
+std::vector<char> EnigmaM4::GetRotorsPos() const {
+    return {rotorLeft.GetPos(), rotorMiddle.GetPos(), rotorRight.GetPos(), rotorExtra.GetPos()};
 }

@@ -1,6 +1,109 @@
 #include <iostream>
 #include <vector>
 #include "interface.hpp"
+
+//constructor with window initialisation
+Interface::Interface() {
+    initscr();
+    start_color();
+    noecho();  //hides input from user
+    raw(); //non blocking input
+    curs_set(0); //hides cursor
+    clear();
+
+    if (COLORS >= 256) { //check if terminal supports color indexes, if yes creates color pairs
+       init_pair(1, COLOR_WHITE, 236);
+       init_pair(2, 137, 94);
+    }
+
+    enigmawin = newwin(20, 50, 0, 0);
+}
+//destructor with window deletion
+Interface::~Interface() {
+    delwin(enigmawin);
+    endwin();
+}
+//public method to print the interface
+void Interface::DrawUI(const Enigma& machine, char lamp, char model) {
+    box(enigmawin, 0, 0);
+    wbkgd(enigmawin, COLOR_PAIR(1)); //background color
+    wattron(enigmawin, COLOR_PAIR(2)); //border color
+    wborder(enigmawin, '#', '#', '#', '#', '#', '#', '#', '#');
+    wattroff(enigmawin, COLOR_PAIR(2));
+
+    std::vector<char> rotorsPositions = machine.GetRotorsPos();
+
+    DrawEnigma(enigmawin, 1, 21);
+    for(int i = 0; i < rotorsPositions.size(); i++) {
+        if(i == 3) { //draw the fourth rotor if it exists
+            DrawRotorBox(enigmawin, rotorsPositions[i], 5, 10);
+        }
+        else {
+            DrawRotorBox(enigmawin, rotorsPositions[i], 5, (14 + (i * 4)));
+        }
+    }
+    DrawLampboardRow(enigmawin, row1, lamp, 9, 7);
+    DrawLampboardRow(enigmawin, row2, lamp, 11, 9);
+    DrawLampboardRow(enigmawin, row3, lamp, 13, 7);
+    DrawModel(enigmawin, model, 16, 22);
+
+    refresh();
+    wrefresh(enigmawin);
+}
+//private methods to print the interface parts
+void Interface::DrawEnigma(WINDOW *win, int y, int x) {
+    mvwvline(win, y, x, ACS_ULCORNER, 1);
+    mvwvline(win, y + 1, x, ACS_VLINE, 1);
+    mvwvline(win, y + 2, x, ACS_LLCORNER, 1);
+    mvwhline(win, y, x + 1, ACS_HLINE, 6);
+    mvwhline(win, y + 2, x + 1, ACS_HLINE, 6);
+    mvwvline(win, y, x + 7, ACS_URCORNER, 1);
+    mvwvline(win, y + 1, x + 7, ACS_VLINE, 1);
+    mvwvline(win, y + 2, x + 7, ACS_LRCORNER, 1);
+    mvwprintw(win, y + 1, x + 1, "ENIGMA");
+}
+
+void Interface::DrawRotorBox(WINDOW *win, char pos, int y, int x) {
+    mvwvline(win, y, x, ACS_ULCORNER, 1);
+    mvwvline(win, y + 1, x, ACS_VLINE, 1);
+    mvwvline(win, y + 2, x, ACS_LLCORNER, 1);
+    mvwhline(win, y, x + 1, ACS_HLINE, 1);
+    mvwhline(win, y + 2, x + 1, ACS_HLINE, 1);
+    mvwvline(win, y, x + 2, ACS_URCORNER, 1);
+    mvwvline(win, y + 1, x + 2, ACS_VLINE, 1);
+    mvwvline(win, y + 2, x + 2, ACS_LRCORNER, 1);
+    mvwprintw(win, y + 1, x + 1, "%c", pos);
+}
+
+void Interface::DrawLampboardRow(WINDOW *win, std::string keys, char lamp, int y, int x_offset) {
+    for (int i = 0; i < keys.size(); ++i) {
+        int x = x_offset + (i * 4);
+        //check which lamp the encrypted key corresponds to
+        if(toupper(lamp) == keys[i]) {
+            wattron(win, A_STANDOUT); //'lights' it
+            mvwprintw(win, y, x, "( )");
+            mvwprintw(win, y, x + 1, "%c", keys[i]);
+            wattroff(win, A_STANDOUT);
+        }
+        else {
+            mvwprintw(win, y, x, "( )");
+            mvwprintw(win, y, x + 1, "%c", keys[i]);
+        }
+    }
+}
+
+void Interface::DrawModel(WINDOW *win, char model, int y, int x) {
+    mvwvline(win, y, x, ACS_ULCORNER, 1);
+    mvwvline(win, y + 1, x, ACS_VLINE, 1);
+    mvwvline(win, y + 2, x, ACS_LLCORNER, 1);
+    mvwhline(win, y, x + 1, ACS_HLINE, 4);
+    mvwhline(win, y + 2, x + 1, ACS_HLINE, 4);
+    mvwvline(win, y, x + 5, ACS_URCORNER, 1);
+    mvwvline(win, y + 1, x + 5, ACS_VLINE, 1);
+    mvwvline(win, y + 2, x + 5, ACS_LRCORNER, 1);
+    mvwprintw(win, y + 1, x + 2, "M%c", model);
+}
+//prints informations on arguments and options
 void PrintUsage() {
     std::cerr << "Usage: enigma.exe [<command>]\n"
               << "List of available commands:\n"
@@ -23,28 +126,19 @@ void PrintInstructions() {
               << "Luckily, through a guided procedure, you will be asked to input the settings. Just follow the instructions.\n"
               << "You will then be able to input letters and get the encrypted result.\n";
 }
-//function to print the interface
-void PrintInterface() {
-    std::cout << "\033[2J\033[H"; //ansi escape sequence to clear the screen
-    std::cout << "       >[A]>[A]>[A]        \n\n"
-              << "(Q)(W)(E)(R)(T)(Z)(U)(I)(O)\n"
-              << " (A)(S)(D)(F)(G)(H)(J)(K)  \n"
-              << "(P)(Y)(X)(C)(V)(B)(N)(M)(L)\n";
-}
 //function to get settings
 char GetModel() {
     char m;
     do{
-    std::cout << "Select the model you want to use: '1' for M3 (Standard) and '2' for M4 (Uboat)\n";
+    std::cout << "Select the model you want to use: '3' for M3 (Standard) and '4' for M4 (Uboat)\n";
     std::cin >> m;
-    }while(m != '1' && m != '2');
+    }while(m != '3' && m != '4');
     return m;
 }
 //function to get the input key
 char GetKey() {
     char key;
-    std::cout << "Press any key:\n";
-    get_input; //key = _getch() on windows, uses a specific function on linux
+    key = getch();
     if(islower(key)) { //check if letter is lowercase
         key = toupper(key); //converts to uppercase
     }
@@ -52,7 +146,7 @@ char GetKey() {
 }
 //function to print the key once the input is taken
 void LightKey(char key) {
-    std::cout << "Lamp lit: " << key << "\n";
+    std::cout << key << "\n";
 }
 //function to print the before or text after the encryption
 void PrintText(std::vector<char> text) {
@@ -63,4 +157,18 @@ void PrintText(std::vector<char> text) {
         }
     }
     std::cout << "\n";
+}
+
+char AskSave(std::vector<char> textInput, std::vector<char> textOutput) {
+    char choice{};
+
+    std::cout << "Your text: \n";
+    PrintText(textInput); //print input text
+    std::cout << "Your encrypted text: \n";
+    PrintText(textOutput); //prints final text
+    //asks if the user wants to save the encrypted text
+    std::cout << "Do you want to save your encrypted text? (y/n)\n";
+    std::cin >> choice;
+
+    return choice;
 }

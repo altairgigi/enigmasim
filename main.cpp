@@ -1,5 +1,5 @@
 #include <iostream>
-#include <memory> //for the smart pointer
+#include <memory> //for the smart pointers
 #include <string> //for the arguments
 #include <vector> //for the texts
 #include "enigma.hpp"
@@ -11,7 +11,9 @@
 #include "handler.hpp"
 
 int main (int argc, char *argv[]) {
+    char model{}, &m = model; //variables needed for initialisation
     std::unique_ptr<Enigma> machine; //declare a smart pointer to avoid scope issue when initalising the machine
+
     //checks for the arguments 
     if(argc == 1){
         std::cout << "Welcome to EnigmaSim!\n";
@@ -23,10 +25,12 @@ int main (int argc, char *argv[]) {
         if(std::string(argv[2]) == "-m3"){
             MachineConfig enigmaConfig = LoadDefaultSettings("M3");
             machine = std::make_unique<Enigma>(enigmaConfig);
+            m = '3';
         }
         else if(std::string(argv[2]) == "-m4"){
             MachineConfig enigmaConfig = LoadDefaultSettings("M4");
             machine = std::make_unique<EnigmaM4>(enigmaConfig);
+            m = '4';
         }
         else{
             PrintUsage(); //if the argument was correct but the option was not
@@ -37,15 +41,9 @@ int main (int argc, char *argv[]) {
         PrintUsage();
         return 1;
     }
-    
-    char key, choice, model; //user input and choices
-    char &k = key; //alias for user input
-    bool endEncrypt = false; //flag for the cycle
-    std::vector<char> text, textEncrypted; //vectors where texts will be stored
-
     if(argc == 1 || std::string(argv[1]) == "-info") {
         model = GetModel(); //model selection and setup
-        if(model == '1') { //loads standard configuration
+        if(model == '3') { //loads standard configuration
             MachineConfig enigmaConfig = LoadCustomSettings();
             machine = std::make_unique<Enigma>(enigmaConfig);
         }
@@ -55,29 +53,30 @@ int main (int argc, char *argv[]) {
         }
     }
 
-    PrintInterface(); //prints interface
+    char key{}, choice{}, lamp{}; //variables initialised to default value ('\0')
+    char &k = key, &l = lamp; //alias for user input
+    bool endEncrypt = false; //flag for the cycle
+    std::vector<char> textInput, textOutput; //vectors where texts will be stored
+    auto gui = std::make_unique<Interface>(); //interface class object
+
     //cycle for the encryption will prompt for a key, encrypt it and show the result
     while(!endEncrypt){
+        gui->DrawUI(*machine, l, m);
         if((k = GetKey()) == 13){ //checks if key pressed was enter, if not keeps encrypting
             endEncrypt = true; //if yes the flag gets true
+            gui.reset();
             continue;
         }
-        text.push_back(key); //saves key
+        textInput.push_back(key); //saves key
         machine->Encrypt(k); //encrypts key
-        PrintInterface(); //prints interface
-        LightKey(key); //shows encrypted key
-        textEncrypted.push_back(key); //saves encrypted key
-        PrintText(textEncrypted);
+        textOutput.push_back(key); //saves encrypted key
+        l = key;
+        gui->DrawUI(*machine, l, m);
     }; //exits the cycle if the flag is true
-    std::cout << "Your text: \n";
-    PrintText(text);
-    std::cout << "Your encrypted text: \n";
-    PrintText(textEncrypted); //prints final text
-    //asks if the user wants to save the encrypted text
-    std::cout << "Do you want to save your encrypted text? (y/n)\n";
-    std::cin >> choice;
-    if(choice == 'y' || choice == 'Y') {
-        SaveFile(textEncrypted);
+
+    //ask if user wants to save to .txt
+    if(toupper(AskSave(textInput, textOutput)) == 'Y') {
+        SaveFile(textOutput);
     }
 
     return 0;
