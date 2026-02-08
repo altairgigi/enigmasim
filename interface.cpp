@@ -6,6 +6,7 @@
 Interface::Interface() {
     initscr();
     start_color();
+    keypad(stdscr, true);
     noecho();  //hides input from user
     raw(); //non blocking input
     curs_set(0); //hides cursor
@@ -80,7 +81,7 @@ void Interface::DrawLampboardRow(WINDOW *win, std::string keys, char lamp, int y
     for (int i = 0; i < keys.size(); ++i) {
         int x = x_offset + (i * 4);
         //check which lamp the encrypted key corresponds to
-        if(toupper(lamp) == keys[i]) {
+        if(std::toupper(lamp) == keys[i]) {
             wattron(win, A_STANDOUT); //'lights' it
             mvwprintw(win, y, x, "( )");
             mvwprintw(win, y, x + 1, "%c", keys[i]);
@@ -140,10 +141,20 @@ char GetModel() {
 //function to get the input key
 char GetKey() {
     char key;
-    key = getch();
-    if(islower(key)) { //check if letter is lowercase
-        key = toupper(key); //converts to uppercase
+    int buffer;
+    while(true) {
+        buffer = getch();
+        if(std::isalpha(buffer) || buffer == 13){ //check if character is a letter
+            break;
+        }
+        else {
+            std::cout << "\a"; //acoustic alert
+            continue;
+        }
     }
+        
+    key = static_cast<char>(buffer); //converts to char
+    key = std::toupper(key); //converts to uppercase
     return key;
 }
 //function to print the key once the input is taken or after the encryption
@@ -172,5 +183,5 @@ char AskSave(std::vector<char> textInput, std::vector<char> textOutput) {
     std::cout << "Do you want to save your encrypted text? (y/n)\n";
     std::cin >> choice;
 
-    return choice;
+    return std::toupper(choice);
 }

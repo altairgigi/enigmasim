@@ -91,7 +91,7 @@ RotorConfig GetRotorSetting(std::string n, std::vector<int> &set) {
                 std::cout << "Error: This configuration doesn't exists! Loading default rotor settings...\n";
                 if(n == "left") {
                     set.push_back(1);
-                    return {ALPHABET, ROTOR_1, 0, 0};
+                    return {ALPHABET, ROTOR_3, 0, 0};
                 }
                 else if(n == "middle") {
                     set.push_back(2);
@@ -99,7 +99,7 @@ RotorConfig GetRotorSetting(std::string n, std::vector<int> &set) {
                 }
                 else{
                     set.push_back(3);
-                    return {ALPHABET, ROTOR_3, 0, 0};
+                    return {ALPHABET, ROTOR_1, 0, 0};
                 }
                 break;
         }
@@ -113,13 +113,13 @@ ReflectorConfig GetReflectorSetting() {
     std::cin >> input;
     std::cin.ignore(1000, '\n'); //cleans buffer
 
-    if(std::tolower(input) == 'a') {
+    if(std::toupper(input) == 'A') {
         return REFLECTOR_A;
     }
-    else if(std::tolower(input) == 'b') {
+    else if(std::toupper(input) == 'B') {
         return REFLECTOR_B;
     }
-    else if(std::tolower(input) == 'c') {
+    else if(std::toupper(input) == 'C') {
         return REFLECTOR_C;
     }
     else {
@@ -135,10 +135,10 @@ ReflectorConfig GetReflectorSetting(std::string mod) {
     std::cin >> input;
     std::cin.ignore(1000, '\n'); //cleans buffer
 
-    if(std::tolower(input) == 'b') {
+    if(std::toupper(input) == 'B') {
         return REFLECTOR_B_DUNN;
     }
-    else if(std::tolower(input) == 'c') {
+    else if(std::toupper(input) == 'C') {
         return REFLECTOR_C_DUNN;
     }
     else {
@@ -157,6 +157,7 @@ PlugboardConfig GetPlugboardSettings() {
         }
         std::cout << "Select plugs: \n";
         std::getline(std::cin, plugs);
+        std::erase(plugs, ' '); //removes spaces if present
         if(plugs.empty()) { //if the user just presses enter the plugboard configuration is skipped
             return plugCon;
         }
@@ -222,7 +223,7 @@ MachineConfig LoadCustomSettings(std::string m) {
     std::cout << "Use 'A', 'B', or 'C' to pick the reflector.\n";
     ReflectorConfig RefCon = GetReflectorSetting(m);
 
-    std::cout << "Enter max 10 pairs of letters: es. 'azbuenlptv' to switch 'a' with 'z', 'b' with 'u', and so on. Press just Enter to skip.\n";
+    std::cout << "Enter max 10 pairs of letters: es. 'AZ BU EN LP TV' to switch 'A' with 'Z', 'B' with 'U', and so on. Press just Enter to skip.\n";
     PlugboardConfig plugCon = GetPlugboardSettings();
     //assembles configuration
     MachineConfig enigmaConfig = {plugCon, RefCon, rotLeftCon, rotMidCon, rotRightCon, rotExtraCon};

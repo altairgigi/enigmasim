@@ -75,7 +75,7 @@ int main (int argc, char *argv[]) {
     }; //exits the cycle if the flag is true
 
     //ask if user wants to save to .txt
-    if(toupper(AskSave(textInput, textOutput)) == 'Y') {
+    if(std::toupper(AskSave(textInput, textOutput)) == 'Y') {
         SaveFile(textOutput);
     }
 

@@ -15,7 +15,7 @@ Enigma::~Enigma() {
 }
 //function to encrypt 
 void Enigma::Encrypt(char &key) {
-    int index = Ctoi(key); //set to be the array position of variable 'k' to handle the mapping
+    int index = Ctoi(key); //set to be the array position of variable 'key' to handle the mapping
     int &i = index;
     StepRotors(); //first steps the rotors then proceed with the sequence
     board.Swap(key, i);
