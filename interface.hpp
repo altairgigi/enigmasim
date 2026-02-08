@@ -34,7 +34,7 @@ void PrintUsage();
 void PrintInstructions();
 char GetModel();
 char GetKey();
-void LightKey(char key);
+void PrintKey(char key); //this function exists for debug purpose
 void PrintText(std::vector<char> text);
 char AskSave(std::vector<char> textInput, std::vector<char> textOutput);
 

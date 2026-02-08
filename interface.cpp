@@ -51,6 +51,7 @@ void Interface::DrawUI(const Enigma& machine, char lamp, char model) {
     wrefresh(enigmawin);
 }
 //private methods to print the interface parts
+//this draws the enigma box in the upside center of the guy
 void Interface::DrawEnigma(WINDOW *win, int y, int x) {
     mvwvline(win, y, x, ACS_ULCORNER, 1);
     mvwvline(win, y + 1, x, ACS_VLINE, 1);
@@ -62,7 +63,7 @@ void Interface::DrawEnigma(WINDOW *win, int y, int x) {
     mvwvline(win, y + 2, x + 7, ACS_LRCORNER, 1);
     mvwprintw(win, y + 1, x + 1, "ENIGMA");
 }
-
+//this draws the rotor box
 void Interface::DrawRotorBox(WINDOW *win, char pos, int y, int x) {
     mvwvline(win, y, x, ACS_ULCORNER, 1);
     mvwvline(win, y + 1, x, ACS_VLINE, 1);
@@ -74,7 +75,7 @@ void Interface::DrawRotorBox(WINDOW *win, char pos, int y, int x) {
     mvwvline(win, y + 2, x + 2, ACS_LRCORNER, 1);
     mvwprintw(win, y + 1, x + 1, "%c", pos);
 }
-
+//this draws the lampboard and highlights the encrypted key
 void Interface::DrawLampboardRow(WINDOW *win, std::string keys, char lamp, int y, int x_offset) {
     for (int i = 0; i < keys.size(); ++i) {
         int x = x_offset + (i * 4);
@@ -85,13 +86,13 @@ void Interface::DrawLampboardRow(WINDOW *win, std::string keys, char lamp, int y
             mvwprintw(win, y, x + 1, "%c", keys[i]);
             wattroff(win, A_STANDOUT);
         }
-        else {
+        else { //otherwise prints normally
             mvwprintw(win, y, x, "( )");
             mvwprintw(win, y, x + 1, "%c", keys[i]);
         }
     }
 }
-
+//this draws the model with the model selected in the bottom center of the gui
 void Interface::DrawModel(WINDOW *win, char model, int y, int x) {
     mvwvline(win, y, x, ACS_ULCORNER, 1);
     mvwvline(win, y + 1, x, ACS_VLINE, 1);
@@ -117,21 +118,22 @@ void PrintUsage() {
 void PrintInstructions() {
     std::cout << "Welcome to EnigmaSim! This is a simple yet historically accurate Enigma machine simulator.\n"
               << "\nOperators who were tasked with managing the machine had to follow a strict sequence of operations:\n"
-              << "1) Consult  the cipher for that day;\n"
-              << "2) Take the three rotors to be used;\n"
+              << "1) Consult the cipher for the Enigma key to be used that day;\n"
+              << "2) Take the three rotors indicated;\n"
               << "3) Set the programming of each individual rotor to the triplet of letters indicated (Ringstellung);\n"
               << "4) Insert them into the machine in the indicated order (Walzenlage);\n"
               << "5) Adjust the initial position of the rotor rings to the triplet of letters indicated (Grundstellung);\n"
-              << "6) Configure the letter exchange pins as determined by the Enigma key for that day (Steckerverbindungen).\n"
-              << "Luckily, through a guided procedure, you will be asked to input the settings. Just follow the instructions.\n"
-              << "You will then be able to input letters and get the encrypted result.\n";
+              << "6) Configure the letter exchange plugs as determined by the Enigma key for that day (Steckerverbindungen).\n"
+              << "\nLuckily, through a guided procedure, you will be able to setup the machine easily.\n"
+              << "Then, you'll be able to input letters and get the encrypted result.\n";
 }
-//function to get settings
+//function to choose the model
 char GetModel() {
     char m;
     do{
     std::cout << "Select the model you want to use: '3' for M3 (Standard) and '4' for M4 (Uboat)\n";
     std::cin >> m;
+    std::cin.ignore(1000, '\n'); //cleans buffer
     }while(m != '3' && m != '4');
     return m;
 }
@@ -144,8 +146,8 @@ char GetKey() {
     }
     return key;
 }
-//function to print the key once the input is taken
-void LightKey(char key) {
+//function to print the key once the input is taken or after the encryption
+void PrintKey(char key) {
     std::cout << key << "\n";
 }
 //function to print the before or text after the encryption
@@ -158,7 +160,7 @@ void PrintText(std::vector<char> text) {
     }
     std::cout << "\n";
 }
-
+//this function asks if user wants to save the text and returns the choice
 char AskSave(std::vector<char> textInput, std::vector<char> textOutput) {
     char choice{};
 

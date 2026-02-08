@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <algorithm>
 #include "handler.hpp"
 #include "tools.hpp"
 //function to load default settings
@@ -14,70 +16,93 @@ MachineConfig LoadDefaultSettings(std::string m) {
     }
 }
 //gets rotor settings through function to initialise struct
-RotorConfig GetRotorSetting(std::string n) {
-    int select, ring, offset;
-    if(n == "extra") {
-        std::cout << "Select fourth rotor setting: \n";
+RotorConfig GetRotorSetting(std::string n, std::vector<int> &set) {
+    std::string input; //this will be used to parse the input
+    int conf, ring, offset; //these will be used to store the input parsed
+    while(true) {
+        if(n == "extra") {
+            std::cout << "Select fourth rotor setting: \n";
+        }
+        else {
+            std::cout << "Select " << n << " rotor setting: \n";
+        }
+        std::getline(std::cin, input);
+        std::stringstream ss(input); //prepares the string to be parsed
+        if (!(ss >> conf >> ring >> offset)) { //parse and validates the input 
+            continue;
+        }
+        //ensures that if the value was already chosen the user is asked to input it again
+        if(std::ranges::contains(set, conf)) //i chose std::range::contains over std::find because i only need a true/false result
+        {
+            std::cout << "Rotor already chosen once! All rotors are unique.\n";
+            continue;
+        }
+        else{
+            break;
+        }
     }
-    else {
-        std::cout << "Select " << n << " rotor setting: \n";
-    }
-    std::cin >> select >> ring >> offset;
-    std::cin.ignore(1000, '\n'); //cleans buffer
-    //if values are above range reset them
+    //if values are over range resets them
     ring = ring % 26;
     offset = offset %26;
     //if to handle variant configuration assignment
     if(n == "extra") {
-        if(select == 9) {
+        if(conf == 9) {
             return {ALPHABET, ROTOR_B, offset, ring};
         }
-        else if(select == 0) {
-            return {ALPHABET, ROTOR_B, offset, ring};
+        else if(conf == 0) {
+            return {ALPHABET, ROTOR_G, offset, ring};
         }
         else {
             std::cout << "Error: This configuration doesn't exists! Loading default rotor settings...\n";
             return {ALPHABET, ROTOR_B, 0, 0};
         }
     }
-    //switch to handle standard configuration assignment
-    switch(select) {
-        case 1: 
-            return {ALPHABET, ROTOR_1, offset, ring};
-            break;
-        case 2:
-            return {ALPHABET, ROTOR_2, offset, ring};
-            break;
-        case 3:
-            return {ALPHABET, ROTOR_3, offset, ring};
-            break;
-        case 4:
-            return {ALPHABET, ROTOR_4, offset, ring};
-            break;
-        case 5:
-            return {ALPHABET, ROTOR_5, offset, ring};
-            break;
-        case 6:
-            return {ALPHABET, ROTOR_6, offset, ring};
-            break;
-        case 7:
-            return {ALPHABET, ROTOR_7, offset, ring};
-            break;
-        case 8:
-            return {ALPHABET, ROTOR_8, offset, ring};
-            break;
-        default: //handles mistakes in configuration
-            std::cout << "Error: This configuration doesn't exists! Loading default rotor settings...\n";
-            if(n == "left") {
-                return {ALPHABET, ROTOR_1, 0, 0};
-            }
-            else if(n == "middle") {
-                return {ALPHABET, ROTOR_2, 0, 0};
-            }
-            else{
-                return {ALPHABET, ROTOR_1, 0, 0};
-            }
-            break;
+    else {
+        if(conf >= 0 && conf <= 8) {
+            set.push_back(conf);
+        }
+        //switch to handle standard configuration assignment
+        switch(conf) {
+            case 1: 
+                return {ALPHABET, ROTOR_1, offset, ring};
+                break;
+            case 2:
+                return {ALPHABET, ROTOR_2, offset, ring};
+                break;
+            case 3:
+                return {ALPHABET, ROTOR_3, offset, ring};
+                break;
+            case 4:
+                return {ALPHABET, ROTOR_4, offset, ring};
+                break;
+            case 5:
+                return {ALPHABET, ROTOR_5, offset, ring};
+                break;
+            case 6:
+                return {ALPHABET, ROTOR_6, offset, ring};
+                break;
+            case 7:
+                return {ALPHABET, ROTOR_7, offset, ring};
+                break;
+            case 8:
+                return {ALPHABET, ROTOR_8, offset, ring};
+                break;
+            default: //handles mistakes in configuration
+                std::cout << "Error: This configuration doesn't exists! Loading default rotor settings...\n";
+                if(n == "left") {
+                    set.push_back(1);
+                    return {ALPHABET, ROTOR_1, 0, 0};
+                }
+                else if(n == "middle") {
+                    set.push_back(2);
+                    return {ALPHABET, ROTOR_2, 0, 0};
+                }
+                else{
+                    set.push_back(3);
+                    return {ALPHABET, ROTOR_3, 0, 0};
+                }
+                break;
+        }
     }
 }
 //function to get reflector settings
@@ -103,7 +128,7 @@ ReflectorConfig GetReflectorSetting() {
     }
 }
 //function to get reflector settings for the variant model
-ReflectorConfig GetReflectorSetting(std::string m) {
+ReflectorConfig GetReflectorSetting(std::string mod) {
     char input;
 
     std::cout << "Select reflector: (i.e. 'B' or 'C')\n";
@@ -117,7 +142,7 @@ ReflectorConfig GetReflectorSetting(std::string m) {
         return REFLECTOR_C_DUNN;
     }
     else {
-        std::cout << "Error: Reflector initialisation failed! Loading default " << m <<" setting...\n";
+        std::cout << "Error: Reflector initialisation failed! Loading default " << mod <<" setting...\n";
         return REFLECTOR_B_DUNN;
     }
 }
@@ -154,14 +179,17 @@ PlugboardConfig GetPlugboardSettings() {
 
 //function to ask and load custom settings
 MachineConfig LoadCustomSettings() {
+    //these will hold the chosen setting to ensure they are selected only once
+    std::vector<int> rotorSet, &set = rotorSet;
+
     std::cout << "This procedure will guide you through the setup.\n";
 
     //initialise components configurations via function to handle array decay and avoid repeating code
     std::cout << "Pick rotor configuration (1-8), then ring setting (0-25) and starting position (0-25).\n" 
-              << "Es. '1 2 3' to use configuration I, with ring setting on 'c' and starting position on 'd'. Press Enter after each number.)\n";
-    RotorConfig rotLeftCon = GetRotorSetting("left");
-    RotorConfig rotMidCon = GetRotorSetting("middle");
-    RotorConfig rotRightCon = GetRotorSetting("right");
+              << "Es. '1 2 3' to use configuration I, with ring setting on 'c' and starting position on 'd'. Each rotor can be chosen only once.)\n";
+    RotorConfig rotLeftCon = GetRotorSetting("left", set);
+    RotorConfig rotMidCon = GetRotorSetting("middle", set);
+    RotorConfig rotRightCon = GetRotorSetting("right", set);
 
     std::cout << "Use 'A', 'B', or 'C' to pick the reflector.\n";
     ReflectorConfig RefCon = GetReflectorSetting();
@@ -175,18 +203,21 @@ MachineConfig LoadCustomSettings() {
 }
 //function to load custom settings for M4 model
 MachineConfig LoadCustomSettings(std::string m) {
+    //as above these will hold the chosen setting to ensure they are selected only once
+    std::vector<int> rotorSettings, &settings = rotorSettings;
+
     std::cout << "This procedure will guide you through the setup.\n";
     
     //initialise components configurations via function to handle array decay and avoid repeating code
     std::cout << "Pick rotor configuration (1-8), then ring setting (0-25) and starting position (0-25).\n" 
               << "Es. '1 2 3' to use configuration I, with ring setting on 'c' and starting position on 'd'. Press Enter after each number.)\n";
-    RotorConfig rotLeftCon = GetRotorSetting("left");
-    RotorConfig rotMidCon = GetRotorSetting("middle");
-    RotorConfig rotRightCon = GetRotorSetting("right");
+    RotorConfig rotLeftCon = GetRotorSetting("left", settings);
+    RotorConfig rotMidCon = GetRotorSetting("middle", settings);
+    RotorConfig rotRightCon = GetRotorSetting("right", settings);
 
     std::cout << "Pick rotor configuration (9 or 0), then ring setting (0-25) and starting position (0-25).\n"
               << "Es. '9 2 3' to use configuration beta, with ring setting 'c' and starting position 'd'. Press Enter after each number\n";
-    RotorConfig rotExtraCon = GetRotorSetting("extra");
+    RotorConfig rotExtraCon = GetRotorSetting("extra", settings);
 
     std::cout << "Use 'A', 'B', or 'C' to pick the reflector.\n";
     ReflectorConfig RefCon = GetReflectorSetting(m);
