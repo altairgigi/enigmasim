@@ -1,4 +1,4 @@
-#pragma once //prefer this since struct can be defined only once in a single compilation
+#pragma once //prefer this since structs can be defined only once in a single compilation
 
 //structs for components configuration to handle array decay; std::array not used for the sake of simplicity
 //struct for plugboard configuration

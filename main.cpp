@@ -62,7 +62,7 @@ int main (int argc, char *argv[]) {
     //cycle for the encryption will prompt for a key, encrypt it and show the result
     while(!endEncrypt){
         gui->DrawUI(*machine, l, m);
-        if((k = GetKey()) == 13){ //checks if key pressed was enter, if not keeps encrypting
+        if((k = gui->GetInput(*machine, l, m)) == 13){ //checks if key pressed was enter, if not keeps encrypting
             endEncrypt = true; //if yes the flag gets true
             gui.reset();
             continue;
@@ -70,12 +70,12 @@ int main (int argc, char *argv[]) {
         textInput.push_back(key); //saves key
         machine->Encrypt(k); //encrypts key
         textOutput.push_back(key); //saves encrypted key
-        l = key;
+        lamp = key;
         gui->DrawUI(*machine, l, m);
     }; //exits the cycle if the flag is true
 
     //ask if user wants to save to .txt
-    if(std::toupper(AskSave(textInput, textOutput)) == 'Y') {
+    if(std::toupper(ConfirmSave(textInput, textOutput)) == 'Y') {
         SaveFile(textOutput);
     }
 

@@ -6,7 +6,7 @@
 Interface::Interface() {
     initscr();
     start_color();
-    keypad(stdscr, true);
+    keypad(stdscr, TRUE); //transform arrow and function keys from escape sequences into int
     noecho();  //hides input from user
     raw(); //non blocking input
     curs_set(0); //hides cursor
@@ -17,15 +17,24 @@ Interface::Interface() {
        init_pair(2, 137, 94);
     }
 
-    enigmawin = newwin(20, 50, 0, 0);
+    enigmawin = nullptr;
+    WindowManager();
 }
+
 //destructor with window deletion
 Interface::~Interface() {
-    delwin(enigmawin);
+    if(enigmawin != nullptr) { //deletes window only if it exists
+        delwin(enigmawin);
+    }
     endwin();
 }
+
 //public method to print the interface
 void Interface::DrawUI(const Enigma& machine, char lamp, char model) {
+    if(enigmawin == nullptr) { //prevent calls on nullptr
+        return;
+    }
+
     box(enigmawin, 0, 0);
     wbkgd(enigmawin, COLOR_PAIR(1)); //background color
     wattron(enigmawin, COLOR_PAIR(2)); //border color
@@ -34,7 +43,7 @@ void Interface::DrawUI(const Enigma& machine, char lamp, char model) {
 
     std::vector<char> rotorsPositions = machine.GetRotorsPos();
 
-    DrawEnigma(enigmawin, 1, 21);
+    DrawEnigmaShield(enigmawin, 1, 21);
     for(int i = 0; i < rotorsPositions.size(); i++) {
         if(i == 3) { //draw the fourth rotor if it exists
             DrawRotorBox(enigmawin, rotorsPositions[i], 5, 10);
@@ -46,14 +55,68 @@ void Interface::DrawUI(const Enigma& machine, char lamp, char model) {
     DrawLampboardRow(enigmawin, row1, lamp, 9, 7);
     DrawLampboardRow(enigmawin, row2, lamp, 11, 9);
     DrawLampboardRow(enigmawin, row3, lamp, 13, 7);
-    DrawModel(enigmawin, model, 16, 22);
+    DrawModelBox(enigmawin, model, 16, 22);
 
     refresh();
     wrefresh(enigmawin);
 }
+
+//function to get the input key
+char Interface::GetInput(const Enigma &machine, char lamp, char model) {
+    char key;
+    int buffer;
+    while(true) {
+        buffer = getch(); //gets input from stdscr
+
+        //check if character is a letter or enter (needed to stop)
+        if((buffer >= 'A' && buffer <= 'Z') || (buffer >= 'a' && buffer <= 'z') || buffer == 13){ 
+            break;
+        }
+        else if(buffer == KEY_RESIZE) {
+            WindowManager();
+            DrawUI(machine, lamp, model);
+            continue;;
+        }
+        else {
+            std::cout << "\a"; //acoustic alert
+            continue;
+        }
+    }
+        
+    key = static_cast<char>(buffer); //converts to char
+    key = std::toupper(key); //converts to uppercase
+    return key;
+}
+
+//manages window creation and resize
+void Interface::WindowManager() {
+    int y, x;
+    resize_term(0, 0); //forces update on COLS and ROWS
+    getmaxyx(stdscr, y, x); //gets COLS and ROWS
+    erase();
+
+    if(enigmawin != nullptr) { //deletes window do print it anew and spare memory
+        delwin(enigmawin);
+        enigmawin = nullptr;
+    }
+
+    if(y < 20 || x < 50) { //checks size
+        mvwprintw(stdscr, 0, 0, "Windows is too small! Enlarge it to see the Enigma machine.");
+        refresh();
+    }
+    else {
+        if(enigmawin == nullptr) { //if window doesn't exists it creates it
+            int origin_y = ((y - 20) / 2), origin_x = ((x - 50) / 2);
+            enigmawin = newwin(20, 50, origin_y, origin_x);
+            keypad(enigmawin, TRUE);
+            wrefresh(enigmawin);
+        }
+    }
+} 
+
 //private methods to print the interface parts
-//this draws the enigma box in the upside center of the guy
-void Interface::DrawEnigma(WINDOW *win, int y, int x) {
+//this draws the enigma shield in the upside center of the gui
+void Interface::DrawEnigmaShield(WINDOW *win, int y, int x) {
     mvwvline(win, y, x, ACS_ULCORNER, 1);
     mvwvline(win, y + 1, x, ACS_VLINE, 1);
     mvwvline(win, y + 2, x, ACS_LLCORNER, 1);
@@ -64,6 +127,7 @@ void Interface::DrawEnigma(WINDOW *win, int y, int x) {
     mvwvline(win, y + 2, x + 7, ACS_LRCORNER, 1);
     mvwprintw(win, y + 1, x + 1, "ENIGMA");
 }
+
 //this draws the rotor box
 void Interface::DrawRotorBox(WINDOW *win, char pos, int y, int x) {
     mvwvline(win, y, x, ACS_ULCORNER, 1);
@@ -76,6 +140,7 @@ void Interface::DrawRotorBox(WINDOW *win, char pos, int y, int x) {
     mvwvline(win, y + 2, x + 2, ACS_LRCORNER, 1);
     mvwprintw(win, y + 1, x + 1, "%c", pos);
 }
+
 //this draws the lampboard and highlights the encrypted key
 void Interface::DrawLampboardRow(WINDOW *win, std::string keys, char lamp, int y, int x_offset) {
     for (int i = 0; i < keys.size(); ++i) {
@@ -93,8 +158,9 @@ void Interface::DrawLampboardRow(WINDOW *win, std::string keys, char lamp, int y
         }
     }
 }
-//this draws the model with the model selected in the bottom center of the gui
-void Interface::DrawModel(WINDOW *win, char model, int y, int x) {
+
+//this draws the model box with the model selected in the bottom center of the gui
+void Interface::DrawModelBox(WINDOW *win, char model, int y, int x) {
     mvwvline(win, y, x, ACS_ULCORNER, 1);
     mvwvline(win, y + 1, x, ACS_VLINE, 1);
     mvwvline(win, y + 2, x, ACS_LLCORNER, 1);
@@ -105,6 +171,7 @@ void Interface::DrawModel(WINDOW *win, char model, int y, int x) {
     mvwvline(win, y + 2, x + 5, ACS_LRCORNER, 1);
     mvwprintw(win, y + 1, x + 2, "M%c", model);
 }
+
 //prints informations on arguments and options
 void PrintUsage() {
     std::cerr << "Usage: enigma.exe [<command>]\n"
@@ -115,6 +182,7 @@ void PrintUsage() {
               << "-m3\tUse the standard(M3) model\n"
               << "-m4\tuse the uboat(M4) model\n";
 }
+
 //function to print instructions on how the simulator will work
 void PrintInstructions() {
     std::cout << "Welcome to EnigmaSim! This is a simple yet historically accurate Enigma machine simulator.\n"
@@ -128,6 +196,7 @@ void PrintInstructions() {
               << "\nLuckily, through a guided procedure, you will be able to setup the machine easily.\n"
               << "Then, you'll be able to input letters and get the encrypted result.\n";
 }
+
 //function to choose the model
 char GetModel() {
     char m;
@@ -138,29 +207,7 @@ char GetModel() {
     }while(m != '3' && m != '4');
     return m;
 }
-//function to get the input key
-char GetKey() {
-    char key;
-    int buffer;
-    while(true) {
-        buffer = getch();
-        if(std::isalpha(buffer) || buffer == 13){ //check if character is a letter
-            break;
-        }
-        else {
-            std::cout << "\a"; //acoustic alert
-            continue;
-        }
-    }
-        
-    key = static_cast<char>(buffer); //converts to char
-    key = std::toupper(key); //converts to uppercase
-    return key;
-}
-//function to print the key once the input is taken or after the encryption
-void PrintKey(char key) {
-    std::cout << key << "\n";
-}
+
 //function to print the before or text after the encryption
 void PrintText(std::vector<char> text) {
     for(int i = 1; i <= text.size(); i++){ //count starts from 1 to handle % 4
@@ -171,8 +218,9 @@ void PrintText(std::vector<char> text) {
     }
     std::cout << "\n";
 }
+
 //this function asks if user wants to save the text and returns the choice
-char AskSave(std::vector<char> textInput, std::vector<char> textOutput) {
+char ConfirmSave(std::vector<char> textInput, std::vector<char> textOutput) {
     char choice{};
 
     std::cout << "Your text: \n";

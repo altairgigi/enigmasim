@@ -21,21 +21,21 @@ class Interface {
         Interface();
         ~Interface();
         void DrawUI(const Enigma& machine, char model, char lamp);  //enigma passed as const to ensure is not accidentally modified
+        char GetInput(const Enigma &machine, char lamp, char model); //manages player input
     private:
         WINDOW *enigmawin;
-        void DrawEnigma(WINDOW *win, int y, int x);
+        void WindowManager(); //manages window creation and resize 
+        void DrawEnigmaShield(WINDOW *win, int y, int x);
         void DrawRotorBox(WINDOW *win, char pos, int y, int x);
         void DrawLampboardRow(WINDOW *win, std::string keys, char lamp, int y, int x_offset);
-        void DrawModel(WINDOW *win, char model, int y, int x); 
+        void DrawModelBox(WINDOW *win, char model, int y, int x);
 };
 
 //prototypes for the functions
 void PrintUsage();
 void PrintInstructions();
 char GetModel();
-char GetKey();
-void PrintKey(char key); //this function exists for debug purpose
 void PrintText(std::vector<char> text);
-char AskSave(std::vector<char> textInput, std::vector<char> textOutput);
+char ConfirmSave(std::vector<char> textInput, std::vector<char> textOutput);
 
 #endif

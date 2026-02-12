@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "handler.hpp"
 #include "tools.hpp"
+
 //function to load default settings
 MachineConfig LoadDefaultSettings(std::string m) {
     if(m == "M3") {
@@ -15,6 +16,7 @@ MachineConfig LoadDefaultSettings(std::string m) {
         return {PLUGBOARD_NOPLUGS, REFLECTOR_B_DUNN, {ALPHABET, ROTOR_3, 0, 0}, {ALPHABET, ROTOR_2, 0, 0}, {ALPHABET, ROTOR_1, 0, 0}, {ALPHABET, ROTOR_B, 0, 0}};
     }
 }
+
 //gets rotor settings through function to initialise struct
 RotorConfig GetRotorSetting(std::string n, std::vector<int> &set) {
     std::string input; //this will be used to parse the input
@@ -105,6 +107,7 @@ RotorConfig GetRotorSetting(std::string n, std::vector<int> &set) {
         }
     }
 }
+
 //function to get reflector settings
 ReflectorConfig GetReflectorSetting() {
     char input;
@@ -127,6 +130,7 @@ ReflectorConfig GetReflectorSetting() {
         return REFLECTOR_B;
     }
 }
+
 //function to get reflector settings for the variant model
 ReflectorConfig GetReflectorSetting(std::string mod) {
     char input;
@@ -146,6 +150,7 @@ ReflectorConfig GetReflectorSetting(std::string mod) {
         return REFLECTOR_B_DUNN;
     }
 }
+
 //function to get the plugs settings
 PlugboardConfig GetPlugboardSettings() {
     std::string plugs;
@@ -183,10 +188,10 @@ MachineConfig LoadCustomSettings() {
     //these will hold the chosen setting to ensure they are selected only once
     std::vector<int> rotorSet, &set = rotorSet;
 
-    std::cout << "This procedure will guide you through the setup.\n";
+    std::cout << "This procedure will guide you through the machine setup.\n";
 
     //initialise components configurations via function to handle array decay and avoid repeating code
-    std::cout << "Pick rotor configuration (1-8), then ring setting (0-25) and starting position (0-25).\n" 
+    std::cout << "Pick rotor configuration (1-8), then ring setting (0-25) and starting position (0-25) separated by spaces.\n" 
               << "Es. '1 2 3' to use configuration I, with ring setting on 'c' and starting position on 'd'. Each rotor can be chosen only once.)\n";
     RotorConfig rotLeftCon = GetRotorSetting("left", set);
     RotorConfig rotMidCon = GetRotorSetting("middle", set);
@@ -202,6 +207,7 @@ MachineConfig LoadCustomSettings() {
 
     return enigmaConfig;
 }
+
 //function to load custom settings for M4 model
 MachineConfig LoadCustomSettings(std::string m) {
     //as above these will hold the chosen setting to ensure they are selected only once
@@ -230,6 +236,7 @@ MachineConfig LoadCustomSettings(std::string m) {
 
     return enigmaConfig;
 }
+
 //function to save text as file with append
 void SaveFile(std::vector<char> txt) {
     std::ofstream opfile("output.txt", std::ios::app); //will use the file to record every past encoding

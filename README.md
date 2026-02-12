@@ -6,6 +6,17 @@ EnigmaSim is an historically accurate Enigma machine simulator made in C++ (c++2
 
 Download the 'enigmasim' file on your Linux system or the 'enigmasim.exe' file on Windows from the Release section.
 
+## How to use
+
+Launch 'enigmasim' executable by command or double-click to launch the program normally.
+
+If you want to have more options, launch from terminal and use arguments and options:
+
+| Argument | Result | Option (after -skip) | Result |
+|---|---|---|---|
+| -info | Shows informations on the machine and the setup procedure. | -m3 | Loads default configuration for the standard M3 model (rotors III-II-I with base position 'A' and ring setting 'A', reflector 'B', and no plugs inserted). |
+| -skip | Skips setup and loads default configuration depending on option selected. | -m4 | Loads default configuration for the uboat M4 model (rotors 'beta-III-II-I' with base position 'A' and ring setting 'A', reflector 'B thin', and no plugs inserted). |
+
 ## Purpose
 EnigmaSim is a project which aimed at creating a working, historically accurate and mechanically faithful Enigma machine simulator while mastering a number C++ features and techniques.
 As consequence it required to 1) understand how the Enigma worked and encrypted data and 2) how to translate its function to C++ while ensuring DRY code, readability and historical accuracy.
@@ -18,7 +29,7 @@ EnigmaSim employs all the basic features of C++ (control flow, strings, vectors,
 EnigmaSim is intended to be fully fledged simulator and as such it has:
 * complete and accurate encryption system with faithful mechanical/electrical behaviour simulation;
 * two different kinds of historical models (M3 and M4) plus countless setting combinations;
-* full set of rotors (I-VIII + beta and gamma) and reflectors (A, B, and C and 'thin' variants) just like the ones used between 1930 and 1945;
+* full set of rotors (I-VIII and beta and gamma) and reflectors (A, B, and C and 'thin' variants) just like the ones used between 1930 and 1945;
 * simulation of 'double step' anomaly, ringstellung, grundstellung, etc;
 * user-defined settings (machine model, rotors, reflectors and plugboard settings) via CLI guided setup;
 * clean and simple text-based GUI with working lamps and rotors;
