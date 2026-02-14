@@ -2,13 +2,19 @@
 
 EnigmaSim is an historically accurate Enigma machine simulator made in C++ (c++23).
 
+![Enigma simulator demo](./assets/enigmademo.gif)
+
 ## Installation
 
-Download the 'enigmasim' file on your Linux system or the 'enigmasim.exe' file on Windows from the Release section.
+Download the `enigmasim` file on your Linux system or the `enigmasim.exe` file on Windows from the Release section.
+
+## Requirements
+
+If you want to compile the program by yourself you'll need either `PDCurses` (on Windows) or `Ncurses` (on Linux).
 
 ## How to use
 
-Launch 'enigmasim' executable by command or double-click to launch the program normally.
+Launch the `enigmasim` executable by command or double-click to launch the program normally.
 
 If you want to have more options, launch from terminal and use arguments and options:
 

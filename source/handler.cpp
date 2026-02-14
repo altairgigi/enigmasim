@@ -158,7 +158,7 @@ PlugboardConfig GetPlugboardSettings() {
 
     do{
         if(plugs.length() > 1 && plugs.length() %2 != 0) { //this won't run during first cycle
-            std::cout << "Attention! You entered an odd number of plugs!\n";
+            std::cout << "Error: You entered an odd number of plugs!\n";
         }
         std::cout << "Select plugs: \n";
         std::getline(std::cin, plugs);
@@ -168,7 +168,7 @@ PlugboardConfig GetPlugboardSettings() {
         }
     }while(plugs.length() > 1 && plugs.length() %2 != 0); //checks if number of character is even
 
-    for(int i = 0;  i < plugs.length() && i < 20; i++) { //manipulates data through indexes
+    for(size_t i = 0;  i < plugs.length() && i < 20; i++) { //manipulates data through indexes
         int c;
         if(i % 2 == 0) {
             c = std::toupper(plugs[i]) - 'A';
@@ -242,7 +242,7 @@ void SaveFile(std::vector<char> txt) {
     std::ofstream opfile("output.txt", std::ios::app); //will use the file to record every past encoding
     //check if file successfully opened
     if(opfile.is_open()) {
-        for(int i = 1; i <= txt.size(); i++) {
+        for(size_t i = 1; i <= txt.size(); i++) {
             opfile << txt[i-1];
             if(i % 4 == 0) { //enigma encrytions were recorded as groups of four letters
                 opfile << " ";

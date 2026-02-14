@@ -11,8 +11,8 @@ class Rotor {
         void ShiftForward(int &index);
         void ShiftBackward(int &index);
         void Rotate(); //this will handle both rotation
-        void Rotate(int offset); //this will handle grundstellung (i.e. ground setting) through offset value
-        void SetRing(int ring); //this will handle ringastellung (i.e. ring setting) through ringSetting value
+        void SetGround(); //this will handle grundstellung (i.e. ground setting) through offset value
+        void SetRing(); //this will handle ringastellung (i.e. ring setting) through ringSetting value
         bool IsOnNotch(); //this will check if the rotor is on the notch
         char GetPos() const ; //gets the (base) position of the rotor
     private:

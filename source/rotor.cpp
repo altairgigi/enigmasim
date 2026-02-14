@@ -11,8 +11,8 @@ Rotor::Rotor(RotorConfig rcfg) {
     offset = rcfg.offset;
     ringSetting = rcfg.ringSetting;
 
-    SetRing(ringSetting); //will set rotor to specified ring setting
-    Rotate(offset); //will position the rotor to specified starting positiong
+    SetRing(); //will set rotor to specified ring setting
+    SetGround(); //will position the rotor to specified starting positiong
 }
 
 //funtion to shift the signal forward
@@ -44,7 +44,7 @@ void Rotor::Rotate() {
 }
 
 //function to simulate grundstellung
-void Rotor::Rotate(int offset) {
+void Rotor::SetGround() {
     for(int j = 0; j < offset; j++) { //will repeat n time depending of offset value
         char buffer1 = ring[0];
         char buffer2 = root[0];
@@ -58,14 +58,14 @@ void Rotor::Rotate(int offset) {
 }
 
 //function to simulate the ringastellung
-void Rotor::SetRing(int ringSetting) {
+void Rotor::SetRing() {
     for(int j = 0; j < ringSetting; j++) { //will repeat n time depending of ring setting value
-        int buffer = Ctoi(root[25] + 1) % 26; //this prevents issues when the character is z
+        int bufferA = Ctoi(root[25] + 1) % 26; //this prevents issues when the character is z
         for(int i = 25; i > 0; i--) {
-            int buffer = (Ctoi(root[i - 1]) + 1) % 26;
-            root[i] = Itoc(buffer);
+            int bufferB = (Ctoi(root[i - 1]) + 1) % 26;
+            root[i] = Itoc(bufferB);
         }
-        root[0] = Itoc(buffer);
+        root[0] = Itoc(bufferA);
     }
 }
 

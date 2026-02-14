@@ -53,7 +53,7 @@ int main (int argc, char *argv[]) {
         }
     }
 
-    char key{}, choice{}, lamp{}; //variables initialised to default value ('\0')
+    char key{}, lamp{}; //variables initialised to default value ('\0')
     char &k = key, &l = lamp; //alias for user input
     bool endEncrypt = false; //flag for the cycle
     std::vector<char> textInput, textOutput; //vectors where texts will be stored
@@ -62,7 +62,7 @@ int main (int argc, char *argv[]) {
     //cycle for the encryption will prompt for a key, encrypt it and show the result
     while(!endEncrypt){
         gui->DrawUI(*machine, l, m);
-        if((k = gui->GetInput(*machine, l, m)) == 13){ //checks if key pressed was enter, if not keeps encrypting
+        if((k = gui->GetInput(*machine, l, m)) == '\n'){ //checks if key pressed was enter, if not keeps encrypting
             endEncrypt = true; //if yes the flag gets true
             gui.reset();
             continue;

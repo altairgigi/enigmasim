@@ -44,7 +44,7 @@ void Interface::DrawUI(const Enigma& machine, char lamp, char model) {
     std::vector<char> rotorsPositions = machine.GetRotorsPos();
 
     DrawEnigmaShield(enigmawin, 1, 21);
-    for(int i = 0; i < rotorsPositions.size(); i++) {
+    for(int i = 0; i < static_cast<int>(rotorsPositions.size()); i++) {
         if(i == 3) { //draw the fourth rotor if it exists
             DrawRotorBox(enigmawin, rotorsPositions[i], 5, 10);
         }
@@ -69,8 +69,11 @@ char Interface::GetInput(const Enigma &machine, char lamp, char model) {
         buffer = getch(); //gets input from stdscr
 
         //check if character is a letter or enter (needed to stop)
-        if((buffer >= 'A' && buffer <= 'Z') || (buffer >= 'a' && buffer <= 'z') || buffer == 13){ 
+        if((buffer >= 'A' && buffer <= 'Z') || (buffer >= 'a' && buffer <= 'z')){ 
             break;
+        }
+        else if(buffer == KEY_ENTER || buffer == '\n' || buffer == '\r') {
+            return '\n';
         }
         else if(buffer == KEY_RESIZE) {
             WindowManager();
@@ -143,7 +146,7 @@ void Interface::DrawRotorBox(WINDOW *win, char pos, int y, int x) {
 
 //this draws the lampboard and highlights the encrypted key
 void Interface::DrawLampboardRow(WINDOW *win, std::string keys, char lamp, int y, int x_offset) {
-    for (int i = 0; i < keys.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(keys.size()); ++i) {
         int x = x_offset + (i * 4);
         //check which lamp the encrypted key corresponds to
         if(std::toupper(lamp) == keys[i]) {
@@ -210,7 +213,7 @@ char GetModel() {
 
 //function to print the before or text after the encryption
 void PrintText(std::vector<char> text) {
-    for(int i = 1; i <= text.size(); i++){ //count starts from 1 to handle % 4
+    for(size_t i = 1; i <= text.size(); i++){ //count starts from 1 to handle % 4
         std::cout << text[i-1];
         if(i % 4 == 0) { //original enigma encrypted text was recorded in groups of four letters
             std::cout << " ";

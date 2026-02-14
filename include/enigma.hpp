@@ -16,11 +16,11 @@ public:
     void StepRotors(); //function to orchestrate the rotors rotation
     virtual std::vector<char> GetRotorsPos() const; //function to get the rotors position
 protected:
+    Plugboard board;
+    Reflector reflex;
     Rotor rotorLeft;
     Rotor rotorMiddle;
     Rotor rotorRight;
-    Reflector reflex;
-    Plugboard board;
 };
 
 //declaration of the child enigma M4 class

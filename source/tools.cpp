@@ -9,7 +9,8 @@ int Ctoi(char c) {
 
 //converts alphabet letter into number
 char Itoc(int i) {
-    return 'A' + i;
+    char c = 'A' + i;
+    return c;
 }
 
 //function to get date and time and format them

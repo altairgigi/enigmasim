@@ -8,7 +8,7 @@
 
 //class enigma constructor
 Enigma::Enigma(MachineConfig eni)
-: board(eni.plugboardConfig), rotorLeft(eni.rotorLeftConfig), rotorMiddle(eni.rotorMiddleConfig), rotorRight(eni.rotorRightConfig), reflex(eni.reflectorConfig) {
+: board(eni.plugboardConfig), reflex(eni.reflectorConfig), rotorLeft(eni.rotorLeftConfig), rotorMiddle(eni.rotorMiddleConfig), rotorRight(eni.rotorRightConfig) {
 }
 
 //class enigma constructor with logging
