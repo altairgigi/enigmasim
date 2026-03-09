@@ -171,12 +171,12 @@ PlugboardConfig GetPlugboardSettings() {
     for(size_t i = 0;  i < plugs.length() && i < 20; i++) { //manipulates data through indexes
         int c;
         if(i % 2 == 0) {
-            c = std::toupper(plugs[i]) - 'A';
-            plugCon.plugs[c] = std::toupper(plugs[i + 1]);
+            c = static_cast<char>(std::toupper(static_cast<unsigned char>(Ctoi(plugs[i]))));
+            plugCon.plugs[c] = static_cast<char>(std::toupper(static_cast<unsigned char>(plugs[i + 1])));
         }
         else {
-            c = std::toupper(plugs[i]) - 'A';
-            plugCon.plugs[c] = std::toupper(plugs[i - 1]);
+            c = static_cast<char>(std::toupper(static_cast<unsigned char>(Ctoi(plugs[i]))));
+            plugCon.plugs[c] = static_cast<char>(std::toupper(static_cast<unsigned char>(plugs[i - 1])));
         }
     }
 
@@ -192,7 +192,7 @@ MachineConfig LoadCustomSettings() {
 
     //initialise components configurations via function to handle array decay and avoid repeating code
     std::cout << "Pick rotor configuration (1-8), then ring setting (0-25) and starting position (0-25) separated by spaces.\n" 
-              << "Es. '1 2 3' to use configuration I, with ring setting on 'c' and starting position on 'd'. Each rotor can be chosen only once.)\n";
+              << "Es. '1 2 3' to use configuration I, with ring setting on 'C' and starting position on 'D'. Each rotor can be chosen only once.)\n";
     RotorConfig rotLeftCon = GetRotorSetting("left", set);
     RotorConfig rotMidCon = GetRotorSetting("middle", set);
     RotorConfig rotRightCon = GetRotorSetting("right", set);
@@ -200,7 +200,7 @@ MachineConfig LoadCustomSettings() {
     std::cout << "Use 'A', 'B', or 'C' to pick the reflector.\n";
     ReflectorConfig RefCon = GetReflectorSetting();
 
-    std::cout << "Enter max 10 pairs of letters: es. 'azbuenlptv' to switch 'a' with 'z', 'b' with 'u', and so on. Press just Enter to skip.\n";
+    std::cout << "Enter max 10 pairs of letters: es. 'AZ BU EN LP TV' to switch 'A' with 'Z', 'B' with 'U', and so on. Press just Enter to skip.\n";
     PlugboardConfig plugCon = GetPlugboardSettings();
     //assembles configuration
     MachineConfig enigmaConfig = {plugCon, RefCon, rotLeftCon, rotMidCon, rotRightCon};
@@ -217,16 +217,16 @@ MachineConfig LoadCustomSettings(std::string m) {
     
     //initialise components configurations via function to handle array decay and avoid repeating code
     std::cout << "Pick rotor configuration (1-8), then ring setting (0-25) and starting position (0-25).\n" 
-              << "Es. '1 2 3' to use configuration I, with ring setting on 'c' and starting position on 'd'. Press Enter after each number.)\n";
+              << "Es. '1 2 3' to use configuration I, with ring setting on 'C' and starting position on 'D'. Press Enter after each number.)\n";
     RotorConfig rotLeftCon = GetRotorSetting("left", settings);
     RotorConfig rotMidCon = GetRotorSetting("middle", settings);
     RotorConfig rotRightCon = GetRotorSetting("right", settings);
 
     std::cout << "Pick rotor configuration (9 or 0), then ring setting (0-25) and starting position (0-25).\n"
-              << "Es. '9 2 3' to use configuration beta, with ring setting 'c' and starting position 'd'. Press Enter after each number\n";
+              << "Es. '9 2 3' to use configuration beta, with ring setting 'C' and starting position 'D'. Press Enter after each number\n";
     RotorConfig rotExtraCon = GetRotorSetting("extra", settings);
 
-    std::cout << "Use 'A', 'B', or 'C' to pick the reflector.\n";
+    std::cout << "Use 'B' or 'C' to pick the reflector.\n";
     ReflectorConfig RefCon = GetReflectorSetting(m);
 
     std::cout << "Enter max 10 pairs of letters: es. 'AZ BU EN LP TV' to switch 'A' with 'Z', 'B' with 'U', and so on. Press just Enter to skip.\n";

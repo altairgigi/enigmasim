@@ -2,15 +2,14 @@
 #include <format>
 #include "tools.hpp"
 
-//converts number into alphabet letter
+//converts alphabet letter into number
 int Ctoi(char c) {
-   return c - 'A';
+   return static_cast<int>(c - 'A');
 }
 
-//converts alphabet letter into number
+//converts number into alphabet letter
 char Itoc(int i) {
-    char c = 'A' + i;
-    return c;
+    return static_cast<char>('A' + i);
 }
 
 //function to get date and time and format them
